@@ -1,46 +1,43 @@
-# Getting Started with Create React App
+Code Documentation
+The code you provided is a React component that renders a 3D scene using the @react-three/fiber library. It allows you to add and remove 3D models to the scene and provides performance logging functionality.
+![image](https://github.com/tahircivann/3D-Model-Add/assets/69795597/8f3ea6c4-30ab-4279-8bac-ab57c6822b73)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Dependencies
+The code relies on several external dependencies, which need to be installed for the code to work properly:
 
-## Available Scripts
+react: React library for building user interfaces.
+react-dom: React library for rendering components to the DOM.
+@react-three/fiber: A React renderer for Three.js, used to create and manipulate 3D scenes.
+@react-three/drei: A collection of useful helpers and abstractions for @react-three/fiber.
+three: JavaScript 3D library (required by @react-three/fiber and other dependencies).
+styled-components: Library for styling React components using CSS-in-JS.
+leva: A library for creating interactive controls for tweaking values in your React components.
+@use-gesture/react: A library for handling gestures in React components.
+three-stdlib: A collection of utility functions and classes for Three.js.
+Make sure to install these dependencies before running the code.
 
-In the project directory, you can run:
+Component Structure
+The code defines a React functional component named App, which represents the main entry point for the application. It renders a 3D scene using the R3FCanvas component from @react-three/fiber.
 
-### `npm start`
+State
+The component uses React's useState hook to manage the state of the application. It maintains two arrays in the state: models and positions. The models array stores the paths to the 3D models to be rendered, while the positions array stores the positions of each model in the scene.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Adding and Removing Models
+The addModel function is called when the "Add Model" button is clicked. It adds a new model path to the models array and initializes its position to [0, 0, 0] in the positions array.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The removeModel function is called when one of the "Remove Model" buttons is clicked. It removes the corresponding model path and position from the models and positions arrays.
 
-### `npm test`
+Rendering Models
+The models.map function is used to render each model in the scene. It iterates over the models array and creates a Model component for each model. The Model component loads the 3D model using the GLTFLoader from Three.js and renders it as a primitive in the scene.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Performance Logging
+The PerformanceLogger component is used to log performance information about the rendering. It uses the useFrame hook from @react-three/fiber to update the performance metrics every second. It logs information such as frames per second (FPS), drawcalls, memory usage, and load time.
 
-### `npm run build`
+User Interface
+The component renders an "Add Model" button that triggers the addModel function when clicked. It also renders a list of "Remove Model" buttons for each model, allowing users to remove specific models from the scene.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Styling
+The code uses the styled-components library to apply custom styles to the buttons. It defines two styled components: StyledButton and StyledRemoveButton. These components define the styles for the "Add Model" button and "Remove Model" buttons, respectively.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Leva Controls
+The code uses the leva library to create interactive controls for adjusting the ambient occlusion (AO) settings and model positions. The config object defines controls for AO intensity, color, radius, samples
