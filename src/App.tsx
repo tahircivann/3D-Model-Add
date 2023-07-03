@@ -10,6 +10,7 @@ import * as leva from 'leva';
 import { GLTF } from 'three-stdlib';
 import { useDrag } from '@use-gesture/react';
 import styled from 'styled-components';
+import { Camera } from 'three';
 
 type ModelProps ={
   models: GLTF[];
@@ -37,6 +38,8 @@ function PerformanceLogger({ models, loadtime }: { models: ModelProps['models'],
     const currentTime = performance.now();
     frameCount.current += 1;
     const rendererInfo = gl.info;
+
+  
 
 
     if (currentTime > previousTime.current + 1000) { // One second has passed since last update
@@ -67,7 +70,7 @@ export default function App() {
   const [positions, setPositions] = useState<Array<Array<number>>>([]);
 
   const addModel = () => {
-    setModels((current) => [...current, "./scan.gltf"]);
+    setModels((current) => [...current, "./drone.glb"]);
     setPositions((current) => [...current, [0, 0, 0]]);
   };
 
@@ -125,7 +128,7 @@ const StyledRemoveButton = styled.button<{ index: number }>`
   return (
     <div className="App">
       <StyledButton onClick={addModel}>Add Model</StyledButton>
-      <R3FCanvas style={{ height: "100vh" }} camera={{ position: [10, 5, 5] }}>
+      <R3FCanvas style={{ height: "100vh" }} camera={{ position: [0, 1, 1] }}>
         <EffectComposer disableNormalPass multisampling={0}>
             <N8AO {...config} />
             <SMAA />
