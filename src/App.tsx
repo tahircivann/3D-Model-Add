@@ -10,68 +10,35 @@ import * as leva from 'leva';
 import { GLTF } from 'three-stdlib';
 import { useDrag } from '@use-gesture/react';
 import styled from 'styled-components';
-import { Camera } from 'three';
 
 type ModelProps ={
   models: GLTF[];
 }
-const Model = ({ model, position, setPosition, modelControl }: { model: string; position: number[]; setPosition: (pos: number[]) => void; modelControl: any }) => {
+
+const Model = ({ model, position, setPosition, modelControl, xAxis }: { model: string; position: number[]; setPosition: (pos: number[]) => void; modelControl: any; xAxis: number }) => {
   const { scene } = useLoader(GLTFLoader, model);
   const bind = useDrag(({ offset: [x, y] }) => setPosition([x / 100, 0, y / 100]));
+  console.log(scene);
 
-  return <primitive {...bind()} object={scene} position={[modelControl.x, modelControl.y, modelControl.z]} />;
+  return <primitive {...bind()} object={scene} position={[xAxis, modelControl.y, modelControl.z]} />;
 };
+
 declare global {
   interface Performance {
     memory?: any;
   }
 }
-function PerformanceLogger({ models, loadtime }: { models: ModelProps['models'], loadtime: number }) {
 
-  const { gl } = useThree();
-  gl.info.autoReset = false;
-
-  const previousTime = useRef(performance.now());
-  const frameCount = useRef(0);
-
-  useFrame(() => {
-    const currentTime = performance.now();
-    frameCount.current += 1;
-    const rendererInfo = gl.info;
-
-  
-
-
-    if (currentTime > previousTime.current + 1000) { // One second has passed since last update
-      const memory = performance.memory ? (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) : "N/A"; // Memory used by JS objects in MB, if available
-
-      const log = {
-        FPS: frameCount.current,
-        drawcalls: { // Add drawcalls to the log
-          total: rendererInfo.render.calls,
-          triangles: rendererInfo.render.triangles
-        },
-        memory: memory + " MB",
-        loadtime: loadtime.toFixed(3) + "s"  // Add loadtime to the log
-      };
-
-      console.log(log);
-      frameCount.current = 0; // Reset the frame counter
-      previousTime.current = currentTime; // Update the last time value
-    }
-    gl.info.reset();
-  });
-
-  return null;
-}
 
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
   const [positions, setPositions] = useState<Array<Array<number>>>([]);
+  const [xAxis, setXAxis] = useState<number[]>([]);
 
   const addModel = () => {
     setModels((current) => [...current, "./scan.gltf"]);
     setPositions((current) => [...current, [0, 0, 0]]);
+    setXAxis((current) => [...current, 0]);
   };
 
   const removeModel = (index: number) => {
@@ -85,6 +52,15 @@ export default function App() {
       updatedPositions.splice(index, 1);
       return updatedPositions;
     });
+    setXAxis((current) => {
+      const updatedXAxis = [...current];
+      updatedXAxis.splice(index, 1);
+      return updatedXAxis;
+    });
+  };
+
+  const changeXAxis = (index: number) => {
+    setXAxis((current) => current.map((c, ci) => (ci === index ? c + 1 : c)));
   };
 
   const config = leva.useControls('AO Controls', {
@@ -111,53 +87,65 @@ export default function App() {
   cursor: pointer;
   margin-bottom: 10px;
 `;
-
-const StyledRemoveButton = styled.button<{ index: number }>`
+  
+  const StyledRemoveButton = styled.button<{ index: number }>`
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    position: absolute;
+    top: ${(props: { index: number; }) => props.index * 40 + 10}px;
+    left: 100px;
+  `;
+  
+  const StyledChangeXAxisButton = styled.button`
   padding: 5px 10px;
-  background-color: #f44336;
+  background-color: #008CBA;  // a different color for distinction
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   position: absolute;
-  top: ${(props: { index: number; }) => props.index * 40 + 10}px;
-  left: 100px;
-`;
-
-
-  return (
+  top: 10px;
+  left: 230px;
+  `;
+return (
     <div className="App">
       <StyledButton onClick={addModel}>Add Model</StyledButton>
-      <R3FCanvas style={{ height: "100vh" }} camera={{ position: [0, 10, 10] }}>
+      <StyledChangeXAxisButton onClick={() => changeXAxis(0)}>Change X Axis</StyledChangeXAxisButton>
+      <R3FCanvas style={{ height: "100vh" }} camera={{ position: [10, 5, 5] }}>
         <EffectComposer disableNormalPass multisampling={0}>
-            <N8AO {...config} />
-            <SMAA />
+          <N8AO {...config} />
+          <SMAA />
         </EffectComposer>
         <Suspense fallback={null}>
           <pointLight position={[10, 10, 10]} />
           {models.map((model, i) => (
-                 <Model
-                 key={i}
-                 model={model}
-                 position={positions[i]}
-                 setPosition={(pos: number[]) => setPositions((current) => current.map((c, ci) => (ci === i ? pos : c)))}
-                 modelControl={modelControl}
-               />       ))}
+            <Model
+              key={i}
+              model={model}
+              position={positions[i]}
+              setPosition={(pos: number[]) =>
+                setPositions((current) => current.map((c, ci) => (ci === i ? pos : c)))
+              }
+              modelControl={modelControl}
+              xAxis={xAxis[i]}
+            />
+          ))}
           <gridHelper args={[100, 100]} />
           <axesHelper args={[5]} />
           <OrbitControls />
           <Environment preset="warehouse" />
         </Suspense>
-        <PerformanceLogger models={[]} loadtime={0} />
       </R3FCanvas>
       {models.map((_, i) => (
-        <StyledRemoveButton
-          key={i}
-          onClick={() => removeModel(i)}
-          index={i}
-        >
-          Remove Model {i + 1}
+        <StyledRemoveButton key={i} index={i} onClick={() => removeModel(i)}>
+          Remove Model
         </StyledRemoveButton>
+
+
       ))}
     </div>
   );
