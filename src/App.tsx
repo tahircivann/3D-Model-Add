@@ -70,7 +70,7 @@ export default function App() {
   const [positions, setPositions] = useState<Array<Array<number>>>([]);
 
   const addModel = () => {
-    setModels((current) => [...current, "./scan.glb"]);
+    setModels((current) => [...current, "./scan.gltf"]);
     setPositions((current) => [...current, [0, 0, 0]]);
   };
 
@@ -128,7 +128,7 @@ const StyledRemoveButton = styled.button<{ index: number }>`
   return (
     <div className="App">
       <StyledButton onClick={addModel}>Add Model</StyledButton>
-      <R3FCanvas style={{ height: "100vh" }} camera={{ position: [0, 1, 1] }}>
+      <R3FCanvas style={{ height: "100vh" }} camera={{ position: [0, 10, 10] }}>
         <EffectComposer disableNormalPass multisampling={0}>
             <N8AO {...config} />
             <SMAA />
