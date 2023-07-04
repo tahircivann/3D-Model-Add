@@ -70,7 +70,7 @@ export default function App() {
   const [positions, setPositions] = useState<Array<Array<number>>>([]);
 
   const addModel = () => {
-    setModels((current) => [...current, "./drone.glb"]);
+    setModels((current) => [...current, "./scan.glb"]);
     setPositions((current) => [...current, [0, 0, 0]]);
   };
 
